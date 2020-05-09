@@ -1,9 +1,5 @@
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier  # Import Decision Tree Classifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
-from sklearn.neighbors import KNeighborsClassifier
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split  # Import train_test_split function
 from sklearn import metrics  # Import scikit-learn metrics module for accuracy calculation
 import numpy as np
@@ -35,7 +31,7 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 # x_train, y_train = x_train[shuffle_index], y_train[shuffle_index]
 
 # create classifier
-clf = KNeighborsClassifier(n_neighbors=15)
+clf = XGBClassifier()
 
 # train classifier
 clf = clf.fit(x_train, y_train)
