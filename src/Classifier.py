@@ -22,7 +22,6 @@ x_train = training_data[feature_columns]
 
 labelToBinary = {'correct': 1, 'incorrect': 0}
 training_data.label = [labelToBinary[item] for item in training_data.label]
-print(training_data)
 y_train = training_data.label
 
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=1)
