@@ -7,7 +7,7 @@ column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter
                 'meter_waiting_till_pickup', 'pickup_time', 'drop_time', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
                 'fare', 'label']
 
-# load dataset
+# loading dataset
 training_data = pd.read_csv('train.csv')
 training_data = training_data.dropna()
 testing_data = pd.read_csv('test.csv')
