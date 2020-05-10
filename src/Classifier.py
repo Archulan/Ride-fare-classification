@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 from sklearn import metrics  # Import scikit-learn metrics module for accuracy calculation
 from xgboost import XGBClassifier
