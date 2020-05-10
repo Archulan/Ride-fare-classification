@@ -47,4 +47,4 @@ print('Accu:', metrics.accuracy_score(y_test, y_predict))
 # df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 # df.index.name = 'tripid'
 #
-# df.to_csv('160040d_submission_1')
+# df.to_csv('output/160040d_submission_1')
