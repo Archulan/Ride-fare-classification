@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
-from xgboost import XGBClassifier
-from sklearn import preprocessing
 from sklearn import metrics  # Import scikit-learn metrics module for accuracy calculation
+from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split  # Import train_test_split function
 
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
@@ -21,9 +20,6 @@ feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waitin
 
 x_train = training_data[feature_columns]
 
-# lb = preprocessing.LabelBinarizer()
-# print(training_data.label)
-# y_train = lb.fit_transform(training_data.label)
 labelToBinary = {'correct': 1, 'incorrect': 0}
 training_data.label = [labelToBinary[item] for item in training_data.label]
 print(training_data)
