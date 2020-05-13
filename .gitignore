@@ -1,7 +1,7 @@
-.idea
 venv
-src/train.csv
-src/test.csv
+.idea
 output
+src/test.csv
+src/train.csv
 src/refined_test.csv
 src/refined_train.csv
