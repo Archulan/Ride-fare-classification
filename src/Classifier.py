@@ -16,9 +16,9 @@ def compute_column(csv_file):
             writer = csv.writer(f2)
             rows = csv.reader(f)
             for row in rows:
-                y = []
-                y.append(float(row[8]) - float(row[10]))
-                writer.writerow(row + y)
+                delta_lat = [abs(float(row[8]) - float(row[10]))]
+                delta_lon = [abs(float(row[9]) - float(row[11]))]
+                writer.writerow(row + delta_lat + delta_lon)
 
 
 # compute_column('train.csv')
@@ -30,7 +30,7 @@ testing_data = pd.read_csv('test.csv')
 # split training dataset into feature and target variables
 feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                    'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                   'fare', 'delta_lat']
+                   'fare', 'delta_lat', 'delta_lon']
 
 x_train = training_data[feature_columns]
 

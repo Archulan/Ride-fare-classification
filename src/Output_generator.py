@@ -8,9 +8,9 @@ def compute_column(csv_file):
             writer = csv.writer(f2)
             rows = csv.reader(f)
             for row in rows:
-                y = []
-                y.append(float(row[8]) - float(row[10]))
-                writer.writerow(row + y)
+                delta_lat = [abs(float(row[8]) - float(row[10]))]
+                delta_lon = [abs(float(row[9]) - float(row[11]))]
+                writer.writerow(row + delta_lat + delta_lon)
 
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pickup_time', 'drop_time', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
@@ -25,11 +25,11 @@ testing_data = pd.read_csv('refined_test.csv')
 # split training dataset into feature and target variables
 training_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat']
+                'fare', 'delta_lat', 'delta_lon']
 
 testing_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat']
+                'fare', 'delta_lat', 'delta_lon']
 
 x_train = training_data[training_feature_columns]
 
@@ -51,4 +51,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_2')
+df.to_csv('160040d_submission_3')
