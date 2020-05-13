@@ -3,4 +3,5 @@ venv
 src/train.csv
 src/test.csv
 output
-
+src/refined_test.csv
+src/refined_train.csv
