@@ -1,6 +1,7 @@
 import math
 import pandas as pd
 import csv
+import numpy as np
 from datetime import datetime
 from sklearn import metrics
 from xgboost import XGBClassifier
@@ -27,8 +28,12 @@ def compute_column(csv_file):
                 distance = r * c
 
                 pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')
-                trip_day = pickup_time.strftime('%w')
-                writer.writerow(row + [delta_lat] + [delta_lon] + [distance] + [trip_day])
+                drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
+                delta_time = abs((drop_time - pickup_time).seconds)
+
+                # row = np.delete(row, [0, 6, 7])
+                writer.writerow(row + [delta_lat] + [delta_lon] + [distance] + [delta_time])
+
 
 # compute_column('train.csv')
 # loading dataset
@@ -40,7 +45,7 @@ testing_data = pd.read_csv('test.csv')
 # split training dataset into feature and target variables
 feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                    'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                   'fare', 'delta_lat', 'delta_lon', 'distance', 'trip_day']
+                   'fare', 'delta_lat', 'delta_lon', 'distance', 'delta_time']
 
 x_train = training_data[feature_columns]
 
