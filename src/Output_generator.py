@@ -1,5 +1,5 @@
 import math
-
+from datetime import datetime
 import pandas as pd
 import csv
 from xgboost import XGBClassifier
@@ -15,11 +15,13 @@ def compute_column(csv_file):
                 lat2 = math.radians(float(row[10]))
                 delta_lat = abs(lat1 - lat2)
                 delta_lon = abs(math.radians(float(row[9])) - math.radians(float(row[11])))
-                print(delta_lat, 'delta_lat', delta_lon, 'delta_lon')
                 a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lon / 2) ** 2
                 c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
                 distance = r * c
-                writer.writerow(row + [delta_lat] + [delta_lon] + [distance])
+
+                pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')
+                trip_day = pickup_time.strftime('%w')
+                writer.writerow(row + [delta_lat] + [delta_lon] + [distance] + [trip_day])
 
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pickup_time', 'drop_time', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
@@ -34,11 +36,11 @@ testing_data = pd.read_csv('refined_test.csv')
 # split training dataset into feature and target variables
 training_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat', 'delta_lon', 'distance']
+                'fare', 'delta_lat', 'delta_lon', 'distance', 'trip_day']
 
 testing_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat', 'delta_lon', 'distance']
+                'fare', 'delta_lat', 'delta_lon', 'distance', 'trip_day']
 
 x_train = training_data[training_feature_columns]
 
@@ -60,4 +62,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_4')
+df.to_csv('160040d_submission_3.5')
