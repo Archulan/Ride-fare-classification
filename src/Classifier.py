@@ -55,11 +55,11 @@ y_train = training_data.label
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=1)
 
 # create classifier
-clf = XGBClassifier(learning_rate=0.04,
+clf = XGBClassifier(learning_rate=0.01,
                     n_estimators=1725,
                     max_depth=12,
                     subsample=0.8,
-                    colsample_bytree=1,
+                    colsample_bytree=0.9,
                     gamma=1)
 
 # train classifier
