@@ -31,8 +31,7 @@ def compute_column(csv_file):
                 drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
                 delta_time = abs((drop_time - pickup_time).seconds)
 
-                # row = np.delete(row, [0, 6, 7])
-                writer.writerow(row + [delta_lat] + [delta_lon] + [distance] + [delta_time])
+                writer.writerow(row[1:6] + row[8:] + [delta_lat] + [delta_lon] + [distance] + [delta_time])
 
 
 # compute_column('train.csv')
@@ -44,8 +43,8 @@ testing_data = pd.read_csv('test.csv')
 
 # split training dataset into feature and target variables
 feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
-                   'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                   'fare', 'delta_lat', 'delta_lon', 'distance', 'delta_time']
+                   'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat',
+                   'drop_lon', 'fare', 'delta_lat', 'delta_lon', 'distance', 'delta_time']
 
 x_train = training_data[feature_columns]
 
@@ -59,7 +58,12 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 # x_train, x_validate, y_train, y_validate = train_test_split(x_train, y_train, test_size=0.25, random_state=1)
 
 # create classifier
-clf = XGBClassifier(learning_rate=0.25, min_child_weight=10, gamma=2, seed=1)
+clf = XGBClassifier(learning_rate=0.01,
+                    n_estimators=2000,
+                    max_depth=3,
+                    subsample=0.8,
+                    colsample_bytree=1,
+                    gamma=1)
 
 # train classifier
 clf = clf.fit(x_train, y_train)

@@ -23,8 +23,7 @@ def compute_column(csv_file):
                 drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
                 delta_time = abs((drop_time - pickup_time).seconds)
 
-                # row = np.delete(row, [0, 6, 7])
-                writer.writerow(row + [delta_lat] + [delta_lon] + [distance] + [delta_time])
+                writer.writerow(row[:6] + row[8:] + [delta_lat] + [delta_lon] + [distance] + [delta_time])
 
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pickup_time', 'drop_time', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
@@ -54,7 +53,12 @@ y_train = training_data.label
 x_test = testing_data[testing_feature_columns]
 
 # create classifier
-clf = XGBClassifier(learning_rate=0.25, min_child_weight=10, gamma=2, seed=1)
+clf = XGBClassifier(learning_rate=0.01,
+                    n_estimators=2000,
+                    max_depth=3,
+                    subsample=0.8,
+                    colsample_bytree=1,
+                    gamma=1)
 
 # train classifier
 clf = clf.fit(x_train, y_train)
@@ -65,4 +69,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_3.25')
+df.to_csv('160040d_submission_1.99')
