@@ -55,7 +55,7 @@ x_test = testing_data[testing_feature_columns]
 # create classifier
 clf = XGBClassifier(learning_rate=0.01,
                     n_estimators=1725,
-                    max_depth=6,
+                    max_depth=9,
                     subsample=0.8,
                     colsample_bytree=1,
                     gamma=1)
@@ -69,4 +69,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_3.8')
+df.to_csv('160040d_submission_6')
