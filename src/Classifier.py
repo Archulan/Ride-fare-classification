@@ -1,9 +1,9 @@
 import math
-import pandas as pd
 import csv
 import numpy as np
-from datetime import datetime
+import pandas as pd
 from sklearn import metrics
+from datetime import datetime
 from xgboost import XGBClassifier
 from sklearn.model_selection import train_test_split
 
@@ -54,13 +54,10 @@ y_train = training_data.label
 
 x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=0.2, random_state=1)
 
-# train, validate, test = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
-# x_train, x_validate, y_train, y_validate = train_test_split(x_train, y_train, test_size=0.25, random_state=1)
-
 # create classifier
 clf = XGBClassifier(learning_rate=0.01,
-                    n_estimators=1750,
-                    max_depth=3,
+                    n_estimators=1725,
+                    max_depth=5,
                     subsample=0.8,
                     colsample_bytree=1,
                     gamma=1)
