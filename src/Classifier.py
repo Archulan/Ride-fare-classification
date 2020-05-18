@@ -59,7 +59,7 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, test_size=
 
 # create classifier
 clf = XGBClassifier(learning_rate=0.01,
-                    n_estimators=2250,
+                    n_estimators=1700,
                     max_depth=3,
                     subsample=0.8,
                     colsample_bytree=1,
