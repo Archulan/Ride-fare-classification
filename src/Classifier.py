@@ -5,7 +5,6 @@ import pandas as pd
 from sklearn import metrics
 from datetime import datetime
 from xgboost import XGBClassifier
-from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
@@ -38,7 +37,7 @@ def compute_column(csv_file):
 # compute_column('train.csv')
 # loading dataset
 dataset = pd.read_csv('refined_train.csv')
-training_data = pd.DataFrame(dataset).fillna(dataset.mean())
+training_data = pd.DataFrame(dataset).fillna(0)
 # training_data = dataset.iloc[:, :-5].values
 # imputer = SimpleImputer(missing_values="NaN", strategy="mean", fill_value=None, verbose=0, copy=True)
 # imputer = imputer.fit(training_data[:, :4])
