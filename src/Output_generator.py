@@ -32,7 +32,7 @@ column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter
 # compute_column('test.csv')
 # loading dataset
 dataset = pd.read_csv('refined_train.csv')
-training_data = pd.DataFrame(dataset).fillna(0)
+training_data = pd.DataFrame(dataset).fillna(dataset.mean())
 # training_data = training_data.dropna()
 testing_data = pd.read_csv('refined_test.csv')
 
@@ -59,7 +59,7 @@ clf = XGBClassifier(learning_rate=0.01,
                     max_depth=12,
                     subsample=0.8,
                     colsample_bytree=0.9,
-                    gamma=1)
+                    gamma=1, base_score=0.5)
 
 # train classifier
 clf = clf.fit(x_train, y_train)
@@ -70,4 +70,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_8.5')
+df.to_csv('160040d_submission_9.5')

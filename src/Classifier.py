@@ -37,7 +37,7 @@ def compute_column(csv_file):
 # compute_column('train.csv')
 # loading dataset
 dataset = pd.read_csv('refined_train.csv')
-training_data = pd.DataFrame(dataset).fillna(0)
+training_data = pd.DataFrame(dataset).fillna(dataset.mean())
 # training_data = dataset.iloc[:, :-5].values
 # imputer = SimpleImputer(missing_values="NaN", strategy="mean", fill_value=None, verbose=0, copy=True)
 # imputer = imputer.fit(training_data[:, :4])
@@ -65,7 +65,7 @@ clf = XGBClassifier(learning_rate=0.01,
                     max_depth=12,
                     subsample=0.8,
                     colsample_bytree=1,
-                    gamma=1, base_score=0.5)
+                    gamma=1, base_score=0.5, booster='dart')
 
 # train classifier
 clf = clf.fit(x_train, y_train)
@@ -73,4 +73,8 @@ clf = clf.fit(x_train, y_train)
 # classify the ride fare
 y_predict = clf.predict(x_test)
 
-print('Accu:', metrics.accuracy_score(y_test, y_predict))
+print('accuracy_score:', metrics.accuracy_score(y_test, y_predict))
+print('f1_score:', metrics.f1_score(y_test, y_predict))
+
+# accuracy_score: 0.9540162980209546
+# f1_score: 0.9750788643533123
