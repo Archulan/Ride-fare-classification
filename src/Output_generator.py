@@ -62,7 +62,7 @@ x_test = testing_data[testing_feature_columns]
 #                     gamma=1, base_score=0.5)
 clf = XGBClassifier(booster='gbtree', learning_rate=0.25, gamma=0, max_depth=25,
                     min_child_weight=0, max_delta_step=0, subsample=1, colsample_bytree=1,
-                    colsample_bylevel=1, colsample_bynode=1, reg_lambda=3  )
+                    colsample_bylevel=1, colsample_bynode=1, reg_lambda=2  )
 
 
 # train classifier
@@ -74,4 +74,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_11.5')
+df.to_csv('160040d_submission_12')
