@@ -14,7 +14,7 @@ def preprocess_train(csv_file):
             count = 0
             for row in rows:
                 if count == 0:
-                    writer.writerow(row[1:6] + row[8:] + ['distance'] + ['travel_time'] + ['trip_day'])
+                    writer.writerow(row[1:6] + row[8:] + ['distance'] + ['travel_time'] + ['trip_day'] + ['trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
                     lat2 = math.radians(float(row[10]))
@@ -23,10 +23,6 @@ def preprocess_train(csv_file):
                     a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lon / 2) ** 2
                     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
                     distance = r * c
-
-                    # pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')
-                    # drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
-                    # delta_time = abs((drop_time - pickup_time).seconds)
 
                     if row[2] == '':
                         duration = 0
@@ -42,7 +38,18 @@ def preprocess_train(csv_file):
                     pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')  # drop day also available
                     trip_day = pickup_time.strftime('%w')
 
-                    writer.writerow(row[1:6] + row[8:] + [distance] + [travel_time] + [trip_day])
+                    if row[12] == '':
+                        fare = 0
+                    else:
+                        fare = float(row[12])
+                    if row[4] == '':
+                        waiting_fare = 0
+                    else:
+                        waiting_fare = float(row[4])
+
+                    trip_fare = fare - waiting_fare
+
+                    writer.writerow(row[1:6] + row[8:] + [distance] + [travel_time] + [trip_day] + [trip_fare])
                 count += 1
 
 def preprocess_test(csv_file):
@@ -54,7 +61,7 @@ def preprocess_test(csv_file):
             count = 0
             for row in rows:
                 if count == 0:
-                    writer.writerow(row[:6] + row[8:] + ['distance'] + ['travel_time'] + ['trip_day'])
+                    writer.writerow(row[:6] + row[8:] + ['distance'] + ['travel_time'] + ['trip_day'] + ['trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
                     lat2 = math.radians(float(row[10]))
@@ -63,10 +70,6 @@ def preprocess_test(csv_file):
                     a = math.sin(delta_lat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(delta_lon / 2) ** 2
                     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
                     distance = r * c
-
-                    # pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')
-                    # drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
-                    # delta_time = abs((drop_time - pickup_time).seconds)
 
                     if row[2] == '':
                         duration = 0
@@ -82,7 +85,18 @@ def preprocess_test(csv_file):
                     pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')  # drop day also available
                     trip_day = pickup_time.strftime('%w')
 
-                    writer.writerow(row[:6] + row[8:] + [distance] + [travel_time] + [trip_day])
+                    if row[12] == '':
+                        fare = 0
+                    else:
+                        fare = float(row[12])
+                    if row[4] == '':
+                        waiting_fare = 0
+                    else:
+                        waiting_fare = float(row[4])
+
+                    trip_fare = fare - waiting_fare
+
+                    writer.writerow(row[:6] + row[8:] + [distance] + [travel_time] + [trip_day] + [trip_fare])
                 count += 1
 
 
@@ -97,11 +111,11 @@ testing_data = pd.read_csv('refined_test.csv')
 # split training dataset into feature and target variables
 training_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                             'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                            'fare', 'distance', 'travel_time', 'trip_day']
+                            'fare', 'distance', 'travel_time', 'trip_day', 'trip_fare']
 
 testing_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                            'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                           'fare', 'distance', 'travel_time', 'trip_day']
+                           'fare', 'distance', 'travel_time', 'trip_day', 'trip_fare']
 
 x_train = training_data[training_feature_columns]
 
@@ -131,4 +145,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_16')
+df.to_csv('160040d_submission_17')
