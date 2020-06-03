@@ -6,11 +6,15 @@ from xgboost import XGBClassifier
 
 def compute_column(csv_file):
     with open(csv_file, newline='') as f:
-        with open('refined_test.csv', 'w', newline='') as f2:
+        with open('refined_train.csv', 'w', newline='') as f2:
             writer = csv.writer(f2)
             rows = csv.reader(f)
             r = 6373.0
+            count = 0
             for row in rows:
+              if count == 0:
+                writer.writerow(row[1:6] + row[8:] + ['distance'] + ['delta_time'] + ['travel_time'])
+              elif count > 0:
                 lat1 = math.radians(float(row[8]))
                 lat2 = math.radians(float(row[10]))
                 delta_lat = abs(lat1 - lat2)
@@ -23,8 +27,19 @@ def compute_column(csv_file):
                 drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
                 delta_time = abs((drop_time - pickup_time).seconds)
 
-                writer.writerow(row[:6] + row[8:] + [delta_lat] + [delta_lon] + [distance] + [delta_time])
+                if row[2] == '':
+                  duration = 0
+                else:
+                  duration = int(row[2])
+                if row[3] == '':
+                  meter_waiting = 0
+                else:
+                  meter_waiting = int(row[3])
 
+                travel_time = duration - meter_waiting
+
+                writer.writerow(row[1:6] + row[8:] + [distance] + [delta_time] + [travel_time])
+              count += 1
 column_names = ['tripid', 'additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pickup_time', 'drop_time', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
                 'fare', 'label']
@@ -39,11 +54,11 @@ testing_data = pd.read_csv('refined_test.csv')
 # split training dataset into feature and target variables
 training_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat', 'delta_lon', 'distance', 'delta_time']
+                'fare','distance', 'delta_time']
 
 testing_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                 'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                'fare', 'delta_lat', 'delta_lon', 'distance', 'delta_time']
+                'fare','distance', 'delta_time']
 
 x_train = training_data[training_feature_columns]
 
@@ -54,15 +69,15 @@ y_train = training_data.label
 x_test = testing_data[testing_feature_columns]
 
 # create classifier
-# clf = XGBClassifier(learning_rate=0.01,
+# clf = XGBClassifier(learning_rate=0.04,
 #                     n_estimators=1725,
 #                     max_depth=12,
 #                     subsample=0.8,
-#                     colsample_bytree=0.9,
+#                     colsample_bytree=1,
 #                     gamma=1, base_score=0.5)
-clf = XGBClassifier(booster='gbtree', learning_rate=0.25, gamma=0, max_depth=25,
+clf = XGBClassifier(booster='gbtree', learning_rate=0.25000008, gamma=0, max_depth=25,
                     min_child_weight=0, max_delta_step=0, subsample=1, colsample_bytree=1,
-                    colsample_bylevel=1, colsample_bynode=1, reg_lambda=0.20005  )
+                    colsample_bylevel=1, colsample_bynode=1, reg_lambda=2.0005  )
 
 
 # train classifier
@@ -74,4 +89,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_13')
+df.to_csv('160040d_submission_15')
