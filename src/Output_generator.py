@@ -117,7 +117,6 @@ preprocess_test('test.csv')
 # loading dataset
 dataset = pd.read_csv('refined_train.csv')
 training_data = pd.DataFrame(dataset).fillna(dataset.mean())
-# training_data = training_data.dropna()
 testing_data = pd.read_csv('refined_test.csv')
 
 # split training dataset into feature and target variables
