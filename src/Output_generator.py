@@ -178,4 +178,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_22')
+df.to_csv('160040d_submission_final')
