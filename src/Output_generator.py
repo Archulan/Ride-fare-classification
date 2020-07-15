@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime
 from xgboost import XGBClassifier
 
-
 def preprocess_train(csv_file):
     with open(csv_file, newline='') as f:
         with open('refined_train.csv', 'w', newline='') as f2:
@@ -14,7 +13,9 @@ def preprocess_train(csv_file):
             count = 0
             for row in rows:
                 if count == 0:
-                    writer.writerow(row[1:6] + row[8:] + ['trip_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + ['trip_fare'])
+                    writer.writerow(
+                        row[1:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + ['drop_day'] + [
+                            'trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
                     lat2 = math.radians(float(row[10]))
@@ -32,15 +33,14 @@ def preprocess_train(csv_file):
                         meter_waiting = 0
                     else:
                         meter_waiting = float(row[3])
-                    if row[1] == '':
-                        additional_fare = 0
-                    else:
-                        additional_fare = float(row[1])
 
-                    travel_time = duration - meter_waiting - additional_fare
+                    travel_time = duration - meter_waiting
 
                     pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')  # drop day also available
-                    trip_day = pickup_time.strftime('%w')
+                    pickup_day = pickup_time.strftime('%w')
+
+                    drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
+                    drop_day = drop_time.strftime('%w')
 
                     travel_hour = pickup_time.strftime('%H')
 
@@ -52,11 +52,17 @@ def preprocess_train(csv_file):
                         waiting_fare = 0
                     else:
                         waiting_fare = float(row[4])
+                    if row[1] == '':
+                        additional_fare = 0
+                    else:
+                        additional_fare = float(row[1])
 
-                    trip_fare = fare - waiting_fare
+                    trip_fare = fare - waiting_fare - additional_fare
 
-                    writer.writerow(row[1:6] + row[8:] + [trip_day] + [distance] + [travel_time] + [travel_hour] + [trip_fare])
+                    writer.writerow(
+                        row[1:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [trip_fare])
                 count += 1
+
 
 def preprocess_test(csv_file):
     with open(csv_file, newline='') as f:
@@ -67,7 +73,9 @@ def preprocess_test(csv_file):
             count = 0
             for row in rows:
                 if count == 0:
-                    writer.writerow(row[:6] + row[8:] + ['trip_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] +['trip_fare'])
+                    writer.writerow(
+                        row[:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + ['drop_day'] + [
+                            'trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
                     lat2 = math.radians(float(row[10]))
@@ -85,15 +93,14 @@ def preprocess_test(csv_file):
                         meter_waiting = 0
                     else:
                         meter_waiting = float(row[3])
-                    if row[1] == '':
-                        additional_fare = 0
-                    else:
-                        additional_fare = float(row[1])
 
-                    travel_time = duration - meter_waiting - additional_fare
+                    travel_time = duration - meter_waiting
 
                     pickup_time = datetime.strptime(row[6], '%m/%d/%Y %H:%M')  # drop day also available
-                    trip_day = pickup_time.strftime('%w')
+                    pickup_day = pickup_time.strftime('%w')
+
+                    drop_time = datetime.strptime(row[7], '%m/%d/%Y %H:%M')
+                    drop_day = drop_time.strftime('%w')
 
                     travel_hour = pickup_time.strftime('%H')
 
@@ -105,10 +112,15 @@ def preprocess_test(csv_file):
                         waiting_fare = 0
                     else:
                         waiting_fare = float(row[4])
+                    if row[1] == '':
+                        additional_fare = 0
+                    else:
+                        additional_fare = float(row[1])
 
-                    trip_fare = fare - waiting_fare
+                    trip_fare = fare - waiting_fare - additional_fare
 
-                    writer.writerow(row[:6] + row[8:] + [trip_day] + [distance] + [travel_time] + [travel_hour] + [trip_fare])
+                    writer.writerow(
+                        row[:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [trip_fare])
                 count += 1
 
 
@@ -122,11 +134,11 @@ testing_data = pd.read_csv('refined_test.csv')
 # split training dataset into feature and target variables
 training_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                             'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                            'fare', 'trip_day', 'distance', 'travel_time', 'travel_hour', 'trip_fare']
+                            'fare', 'pickup_day', 'distance', 'travel_time', 'travel_hour', 'drop_day', 'trip_fare']
 
 testing_feature_columns = ['additional_fare', 'duration', 'meter_waiting', 'meter_waiting_fare',
                            'meter_waiting_till_pickup', 'pick_lat', 'pick_lon', 'drop_lat', 'drop_lon',
-                           'fare', 'trip_day', 'distance', 'travel_time', 'travel_hour', 'trip_fare']
+                           'fare', 'pickup_day', 'distance', 'travel_time', 'travel_hour', 'drop_day', 'trip_fare']
 
 x_train = training_data[training_feature_columns]
 
@@ -143,9 +155,18 @@ x_test = testing_data[testing_feature_columns]
 #                     subsample=0.8,
 #                     colsample_bytree=1,
 #                     gamma=1, base_score=0.5)
-clf = XGBClassifier(booster='gbtree', learning_rate=0.25000008, gamma=0, max_depth=25,
-                    min_child_weight=0, max_delta_step=0, subsample=1, colsample_bytree=1,
-                    colsample_bylevel=1, colsample_bynode=1, reg_lambda=2.0005)
+clf = XGBClassifier(learning_rate=0.01,
+                    n_estimators=5000,
+                    max_depth=4,
+                    min_child_weight=6,
+                    gamma=0,
+                    subsample=0.8,
+                    colsample_bytree=0.8,
+                    reg_alpha=0.005,
+                    objective='binary:logistic',
+                    nthread=4,
+                    scale_pos_weight=1,
+                    seed=27)
 
 # train classifier
 clf = clf.fit(x_train, y_train)
@@ -156,4 +177,4 @@ y_predict = clf.predict(x_test)
 df = pd.DataFrame(y_predict, columns=['prediction'], index=testing_data['tripid'])
 df.index.name = 'tripid'
 
-df.to_csv('160040d_submission_21')
+df.to_csv('160040d_submission_22')
