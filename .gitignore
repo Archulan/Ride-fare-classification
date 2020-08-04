@@ -2,5 +2,7 @@
 venv
 src/train.csv
 src/test.csv
+src/refined_test.csv
+src/refined_train.csv
 output
 
