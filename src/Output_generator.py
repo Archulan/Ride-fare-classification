@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 from xgboost import XGBClassifier
 
+
 def preprocess_train(csv_file):
     with open(csv_file, newline='') as f:
         with open('refined_train.csv', 'w', newline='') as f2:
@@ -14,7 +15,8 @@ def preprocess_train(csv_file):
             for row in rows:
                 if count == 0:
                     writer.writerow(
-                        row[1:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + ['drop_day'] + [
+                        row[1:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + [
+                            'drop_day'] + [
                             'trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
@@ -60,7 +62,8 @@ def preprocess_train(csv_file):
                     trip_fare = fare - waiting_fare - additional_fare
 
                     writer.writerow(
-                        row[1:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [trip_fare])
+                        row[1:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [
+                            trip_fare])
                 count += 1
 
 
@@ -74,7 +77,8 @@ def preprocess_test(csv_file):
             for row in rows:
                 if count == 0:
                     writer.writerow(
-                        row[:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + ['drop_day'] + [
+                        row[:6] + row[8:] + ['pickup_day'] + ['distance'] + ['travel_time'] + ['travel_hour'] + [
+                            'drop_day'] + [
                             'trip_fare'])
                 elif count > 0:
                     lat1 = math.radians(float(row[8]))
@@ -120,7 +124,8 @@ def preprocess_test(csv_file):
                     trip_fare = fare - waiting_fare - additional_fare
 
                     writer.writerow(
-                        row[:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [trip_fare])
+                        row[:6] + row[8:] + [pickup_day] + [distance] + [travel_time] + [travel_hour] + [drop_day] + [
+                            trip_fare])
                 count += 1
 
 
