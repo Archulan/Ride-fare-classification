@@ -1,4 +1,4 @@
-# Ride-fare-classification
+# Ride fare classification
 CS 4622 - Machine learning
 
 This is a solution for a Machine laearning competition organized by Kaggle.
